@@ -2164,7 +2164,7 @@ static char *rpng_inflate_image_data(char *image_data, int image_data_size, int 
         image_data_unfiltered = (char *)RPNG_CALLOC(image_data_decomp_size, 1);  // Actually data unfiltered size should be smaller
 
         int current_filter = 0;
-        int out = 0, x = 0, a = 0, b = 0, c = 0;
+        unsigned char out = 0, x = 0, a = 0, b = 0, c = 0;
 
         // Reverse scanlines filters
         for (int y = 0; y < height; y++)   // Move scanline by scanline, we must discard first byte = current_filter
@@ -2177,10 +2177,10 @@ static char *rpng_inflate_image_data(char *image_data, int image_data_size, int 
                 // a = left pixel byte (from current)
                 // b = above pixel byte (from current)
                 // c = left pixel byte (from b)
-                x = (int)(image_data_filtered[(1 + scanline_size)*y + 1 + p]);
-                a = (p >= pixel_size) ? (int)(image_data_unfiltered[scanline_size*y + p - pixel_size]) : 0;
-                b = (y > 0) ? (int)(image_data_unfiltered[scanline_size*(y - 1) + p]) : 0;
-                c = (y > 0) ? ((p >= pixel_size) ? (int)(image_data_unfiltered[scanline_size*(y - 1) + p - pixel_size]) : 0) : 0;
+                x = (image_data_filtered[(1 + scanline_size)*y + 1 + p]);
+                a = (p >= pixel_size)? (image_data_unfiltered[scanline_size*y + p - pixel_size]) : 0;
+                b = (y > 0)? (image_data_unfiltered[scanline_size*(y - 1) + p]) : 0;
+                c = (y > 0)? ((p >= pixel_size)? (image_data_unfiltered[scanline_size*(y - 1) + p - pixel_size]) : 0) : 0;
 
                 switch (current_filter)
                 {
@@ -2193,7 +2193,7 @@ static char *rpng_inflate_image_data(char *image_data, int image_data_size, int 
                 }
 
                 // Register scanline unfiltered values, byte by byte
-                image_data_unfiltered[y*scanline_size + p] = (char)out;
+                image_data_unfiltered[y*scanline_size + p] = out;
             }
         }
 
